@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.pipichao.springboot.withDataBase.dao.UserMapper">
-    <select id="getUserByUsername"></select>
+    <select id="getUserByUsername" parameterType="java.lang.String" resultType="com.pipichao.springboot.withDataBase.entity.User">
+
+    </select>
+    <select id="getRolesByUserName" resultType="java.lang.String" parameterType="java.lang.String">
+
+    </select>
 </mapper>
