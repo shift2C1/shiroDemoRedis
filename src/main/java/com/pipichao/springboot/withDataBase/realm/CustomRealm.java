@@ -8,6 +8,7 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
@@ -24,9 +25,24 @@ import java.util.Set;
 public class CustomRealm extends AuthorizingRealm {
     @Autowired
     private UserMapper userMapper;
+
+
+    /**
+     * //授权之前必须要先登录 不然会抛异常
+     * */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        return null;
+        String username = (String) principalCollection.getPrimaryPrincipal();
+
+        // 从数据库中根据用户名获取角色数据
+        Set<String> roles = getRolesByUserName(username);
+        // 从数据库中根据用户名获取权限数据
+        Set<String> permissions = getPermissionbyUsername(username);
+
+        SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+        simpleAuthorizationInfo.setStringPermissions(permissions);
+        simpleAuthorizationInfo.setRoles(roles);
+        return simpleAuthorizationInfo;
     }
 
     @Override
@@ -57,6 +73,10 @@ public class CustomRealm extends AuthorizingRealm {
     //查询用户角色
     private Set<String> getRolesByUserName(String username){
         List<String> list=userMapper.getRolesByUserName(username);
+        //用户角色表中 必须是 ：
+        //                      用户1----权限1
+        //                      用户1----权限2
+        //这样的结构
         Set<String> set=new HashSet<>(list);
         return set;
     }
@@ -66,6 +86,8 @@ public class CustomRealm extends AuthorizingRealm {
         Set<String> sets = new HashSet<String>();
         sets.add("user:delete");
         sets.add("user:add");
+        sets.add("user:get");
+        sets.add("admin:get");
         return sets;
     }
 }

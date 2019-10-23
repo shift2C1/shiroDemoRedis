@@ -1,20 +1,28 @@
 package com.pipichao.springboot.withDataBase.config;
 
 import com.pipichao.springboot.withDataBase.realm.CustomRealm;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Configuration
+@Slf4j
 public class ShiroConfig {
+
+    /**---------------------------------------------------认证---------------------------------------------------------------------*/
     //第二步：初始化spring时候加载
 
     @Bean
@@ -66,8 +74,12 @@ public class ShiroConfig {
 
     // 第一步：初始化spring时候加载
 
-    @Autowired
-    private CustomRealm customRealm;
+//    @Autowired
+//    private CustomRealm customRealm;
+    @Bean
+    public CustomRealm getCustomRealm(){
+        return new CustomRealm();
+    }
     @Bean
     public SecurityManager securityManager(){
         DefaultWebSecurityManager securityManager=new DefaultWebSecurityManager();
@@ -76,6 +88,7 @@ public class ShiroConfig {
         //需要从spring容器中获取
 //        CustomRealm customRealm=new CustomRealm();
 
+        CustomRealm customRealm=getCustomRealm();
         // 2.加密配置
         HashedCredentialsMatcher matcher = new HashedCredentialsMatcher();
         matcher.setHashAlgorithmName("md5");//设置加密算法名称
@@ -87,5 +100,34 @@ public class ShiroConfig {
         //
         securityManager.setRealm(customRealm);
         return securityManager;
+    }
+
+
+    /**-----------------------------------------授权-------------------------------------------------------------------------------*/
+    //Shiro生命周期处理器
+    @Bean
+    public LifecycleBeanPostProcessor getLifecycleBeanPostProcessor(){
+        log.info("初始化：lifecycleBeanPostProcessor");
+        LifecycleBeanPostProcessor postProcessor=new LifecycleBeanPostProcessor();
+        return postProcessor;
+    }
+
+
+    /** * 开启Shiro的注解(如@RequiresRoles,@RequiresPermissions),需借助SpringAOP扫描使用Shiro注解的类,并在必要时进行安全逻辑验证
+     * * 配置以下两个bean(DefaultAdvisorAutoProxyCreator(可选)和AuthorizationAttributeSourceAdvisor)即可实现此功能
+     * * @return */
+
+    @Bean
+    @DependsOn({"getLifecycleBeanPostProcessor"})
+    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator(){
+        DefaultAdvisorAutoProxyCreator creator=new DefaultAdvisorAutoProxyCreator();
+        creator.setProxyTargetClass(true);
+        return creator;
+    }
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(){
+        AuthorizationAttributeSourceAdvisor advisor=new AuthorizationAttributeSourceAdvisor();
+        advisor.setSecurityManager(securityManager());
+        return advisor;
     }
 }
