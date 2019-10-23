@@ -7,9 +7,11 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,7 +24,7 @@ public class UserController {
 //    private UserMapper userMapper;
 
     @RequestMapping("/login")
-    public String login(User user){
+    public String login(@RequestBody User user){
         log.info("登陆开始.......");
         Subject subject=SecurityUtils.getSubject();
         UsernamePasswordToken token=new UsernamePasswordToken(user.getUsername(), user.getPassword());
@@ -36,7 +38,8 @@ public class UserController {
 
     @RequestMapping("/testRoles")
     @RequiresRoles("admin")
-    public String testRoles(){
+    @RequiresUser
+    public String testRoles(@RequestBody User user){
         log.info("角色验证");
         return "角色认证成功";
     }
