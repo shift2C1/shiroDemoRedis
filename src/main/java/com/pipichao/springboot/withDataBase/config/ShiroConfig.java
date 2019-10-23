@@ -1,10 +1,11 @@
-package com.pipichao.springboot.mapUserData.config;
+package com.pipichao.springboot.withDataBase.config;
 
-import com.pipichao.springboot.mapUserData.realm.CustomRealm;
+import com.pipichao.springboot.withDataBase.realm.CustomRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,8 +13,9 @@ import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-//@Configuration
+@Configuration
 public class ShiroConfig {
+    //第二步：初始化spring时候加载
 
     @Bean
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager){
@@ -21,7 +23,7 @@ public class ShiroConfig {
 
         factoryBean.setSecurityManager(securityManager);
         //登录地址
-        factoryBean.setLoginUrl("/login.html");
+        factoryBean.setLoginUrl("/static/login.html");
         //认证成功地址
         factoryBean.setSuccessUrl("/index.html");
         //认证失败地址
@@ -35,9 +37,9 @@ public class ShiroConfig {
 
 
         // 权限控制map.过滤器链
-         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
-         filterChainDefinitionMap.put("/login", "anon");//登录页面匿名访问
-         filterChainDefinitionMap.put("/*", "authc");//其他所有页面需要认证
+        Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
+        filterChainDefinitionMap.put("/login", "anon");//登录页面匿名访问
+        filterChainDefinitionMap.put("/*", "authc");//其他所有页面需要认证
 
         // 配置不会被拦截的链接 顺序判断
         // 配置退出过滤器,其中的具体的退出代码Shiro已经替我们实现了
@@ -54,19 +56,25 @@ public class ShiroConfig {
 //             sysPermissionInit.getPermissionInit());
 //         }
 
-         factoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+        factoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
 
 
         return factoryBean;
     }
 
+
+    // 第一步：初始化spring时候加载
+
+    @Autowired
+    private CustomRealm customRealm;
     @Bean
     public SecurityManager securityManager(){
         DefaultWebSecurityManager securityManager=new DefaultWebSecurityManager();
 
 
-        CustomRealm customRealm=new CustomRealm();
+        //需要从spring容器中获取
+//        CustomRealm customRealm=new CustomRealm();
 
         // 2.加密配置
         HashedCredentialsMatcher matcher = new HashedCredentialsMatcher();

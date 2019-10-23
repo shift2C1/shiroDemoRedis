@@ -14,4 +14,5 @@ spring:
   banner:
     location: classpath:banner.txt
 mybatis:
-  mapper-locations:
+  mapper-locations: com.pipichao.springboot.withDataBase.dao/*.xml
+  config-location: classpath:mybatisConfig.xml
