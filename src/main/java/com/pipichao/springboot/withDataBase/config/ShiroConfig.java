@@ -1,8 +1,11 @@
 package com.pipichao.springboot.withDataBase.config;
 
 import com.pipichao.springboot.withDataBase.realm.CustomRealm;
+import com.pipichao.springboot.withDataBase.rediscache.RedisCacheManager;
+import com.pipichao.springboot.withDataBase.session.CustomSessionManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -81,6 +84,14 @@ public class ShiroConfig {
         return new CustomRealm();
     }
     @Bean
+    public CustomSessionManager getCustomSessionManager(){
+        return new CustomSessionManager();
+    }
+    @Bean
+    public RedisCacheManager getCacheManager(){
+        return new RedisCacheManager();
+    }
+    @Bean
     public SecurityManager securityManager(){
         DefaultWebSecurityManager securityManager=new DefaultWebSecurityManager();
 
@@ -88,17 +99,24 @@ public class ShiroConfig {
         //需要从spring容器中获取
 //        CustomRealm customRealm=new CustomRealm();
 
-        CustomRealm customRealm=getCustomRealm();
+
         // 2.加密配置
         HashedCredentialsMatcher matcher = new HashedCredentialsMatcher();
         matcher.setHashAlgorithmName("md5");//设置加密算法名称
         matcher.setHashIterations(1);//设置加密次数
 
+
+        //1:设置验证授权的对比域
+        CustomRealm customRealm=getCustomRealm();
         customRealm.setCredentialsMatcher(matcher);
-
-
-        //
         securityManager.setRealm(customRealm);
+
+        //2:设置session管理
+        CustomSessionManager sessionManager=getCustomSessionManager();
+        securityManager.setSessionManager(sessionManager);
+        //3:设置缓存管理
+        RedisCacheManager cacheManager=getCacheManager();
+        securityManager.setCacheManager(cacheManager);
         return securityManager;
     }
 

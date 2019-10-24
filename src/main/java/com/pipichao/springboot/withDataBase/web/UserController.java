@@ -44,7 +44,7 @@ public class UserController {
         return "角色认证成功";
     }
     @RequestMapping("/testPermission")
-    @RequiresPermissions({"admin:get","user:get"})
+    @RequiresPermissions({"admin/get","user/get"})
     public String testPermission(){
         log.info("权限验证");
         return "权限验证成功";

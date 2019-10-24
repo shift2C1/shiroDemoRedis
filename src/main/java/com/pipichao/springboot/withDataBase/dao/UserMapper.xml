@@ -7,4 +7,7 @@
     <select id="getRolesByUserName"  parameterType="java.lang.String" resultType="java.lang.String">
           select roles from roles_user where username=#{username}
     </select>
+    <select id="getPermissionsByUsername" parameterType="java.lang.String" resultType="java.lang.String">
+        select permission from permission_user where username=#{username}
+    </select>
 </mapper>

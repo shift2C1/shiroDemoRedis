@@ -13,6 +13,20 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
   banner:
     location: classpath:banner.txt
+  redis:
+    port: 6379
+    password:
+    host: localhost
+    jedis:
+      pool:
+        max-idle: 100
+        min-idle: 1
+        max-active: 1000
+        max-wait: 1
+
+
+
+
 mybatis:
   mapper-locations: com.pipichao.springboot.withDataBase.dao/*.xml
   config-location: classpath:mybatisConfig.xml

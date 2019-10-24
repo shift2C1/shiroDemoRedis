@@ -83,11 +83,13 @@ public class CustomRealm extends AuthorizingRealm {
 
     //查询用户权限
     private Set<String> getPermissionbyUsername(String username) {
-        Set<String> sets = new HashSet<String>();
-        sets.add("user:delete");
-        sets.add("user:add");
-        sets.add("user:get");
-        sets.add("admin:get");
+
+        List<String> permissionList=userMapper.getPermissionsByUsername(username);
+//        sets.add("user:delete");
+//        sets.add("user:add");
+//        sets.add("user:get");
+//        sets.add("admin:get");
+        Set<String> sets = new HashSet<String>(permissionList);
         return sets;
     }
 }

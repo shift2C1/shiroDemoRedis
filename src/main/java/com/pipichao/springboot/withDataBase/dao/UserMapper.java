@@ -10,5 +10,5 @@ import java.util.List;
 public interface UserMapper {
     public User getUserByUsername(String username);
     public List<String> getRolesByUserName(String username);
-
+    public List<String>getPermissionsByUsername(String username);
 }
