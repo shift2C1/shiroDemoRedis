@@ -33,7 +33,7 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping("/login")
-    public String login(@RequestBody User user){
+    public String login( User user){
         log.info("登陆开始.......");
         Subject subject=SecurityUtils.getSubject();
         UsernamePasswordToken token=new UsernamePasswordToken(user.getUsername(), user.getPassword());
@@ -52,6 +52,9 @@ public class UserController {
         log.info("角色验证");
         JSONObject result=new JSONObject();
         try {
+//            Subject subject=SecurityUtils.getSubject();
+//            boolean testRoles=subject.hasRole("admin");
+//            System.out.println("测试认证角色："+testRoles);
             userService.testRole(user);
             result.put("code","200");
             result.put("msg","角色认证成功");
@@ -86,5 +89,15 @@ public class UserController {
     public String testPermission(){
         log.info("权限验证");
         return "权限验证成功";
+    }
+
+    @RequestMapping("/logout")
+    public String logout(User user){
+        Subject subject=SecurityUtils.getSubject();
+        System.out.println(subject.getPreviousPrincipals());
+        System.out.println(subject.getPrincipal());
+        System.out.println(subject.getPrincipals());
+        SecurityUtils.getSubject().logout();
+        return "退出成功";
     }
 }

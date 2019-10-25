@@ -33,7 +33,11 @@ public class CustomRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         String username = (String) principalCollection.getPrimaryPrincipal();
-
+        List list =principalCollection.asList();
+        for (Object o:list
+             ) {
+            System.out.println(o);
+        }
         // 从数据库中根据用户名获取角色数据
         Set<String> roles = getRolesByUserName(username);
         // 从数据库中根据用户名获取权限数据

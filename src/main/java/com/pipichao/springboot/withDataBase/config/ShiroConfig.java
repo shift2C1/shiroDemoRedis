@@ -113,10 +113,10 @@ public class ShiroConfig {
 
         //2:设置session管理
         CustomSessionManager sessionManager=getCustomSessionManager();
-        securityManager.setSessionManager(sessionManager);
+//        securityManager.setSessionManager(sessionManager);
         //3:设置缓存管理
         RedisCacheManager cacheManager=getCacheManager();
-        securityManager.setCacheManager(cacheManager);
+//        securityManager.setCacheManager(cacheManager);
         return securityManager;
     }
 
